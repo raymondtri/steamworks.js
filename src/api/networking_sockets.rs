@@ -94,7 +94,7 @@ pub mod networking_sockets {
           // then we need to actually hijack and hit the local server via ip
 
           let handle = client.networking_sockets().connect_by_ip_address(
-            SocketAddr::new(Ipv4Addr::new(127, 0, 0, 1).into(), remote_virtual_port.try_into().unwrap()),
+            SocketAddr::new(Ipv4Addr::new(127, 0, 0, 1).into(), 6969),
             None
           );
 
@@ -211,6 +211,8 @@ pub mod networking_sockets {
       let mut connections = CONNECTIONS.lock().unwrap();
       
       for (steam_id, connection) in connections.iter_mut() {
+        eprintln!("Checking messages for SteamID: {}", steam_id.raw());
+
         if let Ok(received_messages) = connection.receive_messages(batch_size.unwrap_or(10) as usize) {
           for message in received_messages {
             messages.push(P2PPacket {

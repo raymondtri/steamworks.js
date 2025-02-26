@@ -10,21 +10,21 @@ const socket = 0;
 const localSocket = 6969;
 
 client.networking_sockets.createListenSocketP2P(socket);
-client.networking_sockets.createListenSocketIP(localSocket);
+client.networking_sockets.createListenSocketIp(localSocket);
 
 // enable p2p connections
 client.networking_sockets.setAmIServer(true);
 
 // set up one listener just to process the listen p2p events
 setInterval(() => {
-  console.log("Processing listen p2p events");
+  // console.log("Processing listen p2p events");
   client.networking_sockets.processListenP2PEvents();
 }, 1000 / 60)
 
 // and the local ip guh
 setInterval(() => {
-  console.log("Processing listen ip events");
-  client.networking_sockets.processListenIPEvents();
+  // console.log("Processing listen ip events");
+  client.networking_sockets.processListenIpEvents();
 }, 1000 / 60)
 
 
