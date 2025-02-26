@@ -227,6 +227,7 @@ export declare namespace networking_sockets {
   export function setAmIServer(isServer: boolean): void
   export function setAcceptNewP2PRequests(accept: boolean): void
   export function connectP2P(steamId64: bigint, remoteVirtualPort: number): boolean
+  export function disconnectP2P(steamId64: bigint): boolean
   export function processListenP2PEvents(): void
   export function processListenIpEvents(): void
   export interface P2PPacket {

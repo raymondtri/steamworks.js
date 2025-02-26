@@ -16,7 +16,8 @@ pub mod networking_sockets {
           NetworkingIdentity,
           ListenSocketEvent,
           NetConnectionInfo,
-          NetworkingConnectionState
+          NetworkingConnectionState,
+          NetConnectionEnd
         },
         networking_sockets::{
           ListenSocket, NetConnection,
@@ -127,6 +128,22 @@ pub mod networking_sockets {
         }
     }
 
+    // used to break a connection
+    #[napi]
+    pub fn disconnect_p2p(steam_id64: BigInt) -> Result<bool, Error> {
+      let client = crate::client::get_client();
+      let steam_id = SteamId::from_raw(steam_id64.get_u64().1);
+      let identity = NetworkingIdentity::new_steam_id(steam_id);
+      
+      let connection = CONNECTIONS.lock().unwrap().remove(&steam_id);
+      if let Some(connection) = connection {
+        connection.close(NetConnectionEnd::MiscGeneric, Some("Connection willfully disconnected via disconnect_p2p"), false);
+        Ok(true)
+      } else {
+        Ok(false)
+      }
+    }
+
     // used to accept incoming connections
     #[napi]
     pub fn process_listen_p2p_events() {
@@ -145,6 +162,7 @@ pub mod networking_sockets {
                   // Check if we should accept the connection request
                   if *ACCEPT_NEW_REQUESTS.lock().unwrap() {
                       // Attempt to accept the connection request
+                      println!("Accepting connection request for {:?}", request.remote());
                       if let Err(e) = request.accept() {
                           eprintln!("Failed to accept connection: {:?}", e);
                       }
@@ -214,8 +232,6 @@ pub mod networking_sockets {
       let mut connections = CONNECTIONS.lock().unwrap();
       
       for (steam_id, connection) in connections.iter_mut() {
-        eprintln!("Checking messages for SteamID: {}", steam_id.raw());
-
         if let Ok(received_messages) = connection.receive_messages(batch_size.unwrap_or(10) as usize) {
           for message in received_messages {
             messages.push(P2PPacket {
