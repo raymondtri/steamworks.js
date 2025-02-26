@@ -260,6 +260,7 @@ export declare namespace networking_sockets {
     ReliableWithBuffering = 3
   }
   export function sendP2PMessage(steamId64: bigint, data: Buffer, sendType: SendType): boolean
+  export function isConnected(steamId64: bigint): boolean
 }
 export declare namespace networking_utils {
   export function initRelayNetworkAccess(): void

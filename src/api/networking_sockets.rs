@@ -269,4 +269,14 @@ pub mod networking_sockets {
       }
       Err(Error::from_reason("Failed to send message"))
     }
+
+    // and a way to check if we're connected
+    #[napi]
+    pub fn is_connected(
+      steam_id64: BigInt
+    ) -> bool {
+      let steam_id = SteamId::from_raw(steam_id64.get_u64().1);
+      let connections = CONNECTIONS.lock().unwrap();
+      connections.contains_key(&steam_id)
+    }
 }

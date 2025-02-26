@@ -22,4 +22,16 @@ setInterval(() => {
 // now let's send a connection request to the server
 client.networking_sockets.connectP2P(mySteamId, 0);
 
-client.networking_sockets.sendP2PMessage(mySteamId, Buffer.from("Hello, from client!"), 1);
+const main = async () => {
+
+  while(client.networking_sockets.isConnected(mySteamId) === false){
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  console.log("Connected to server!");
+
+  setInterval(() => {
+    client.networking_sockets.sendP2PMessage(mySteamId, Buffer.from("Hello, from client!"), 1);
+  }, 1000)  
+}
+main();
