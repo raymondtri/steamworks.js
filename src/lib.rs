@@ -5,14 +5,13 @@ use steamworks::Client;
 use steamworks::SteamAPIInitError;
 use std::process;
 
-
 pub mod client;
 
 #[macro_use]
 extern crate lazy_static;
 
 #[napi]
-pub fn init(app_id: Option<u32>, networking: Option<bool>) -> Result<(), Error> {
+pub fn init(app_id: Option<u32>) -> Result<(), Error> {
     if client::has_client() {
         client::drop_client();
     }
