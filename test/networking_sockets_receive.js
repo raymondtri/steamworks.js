@@ -30,7 +30,9 @@ setInterval(() => {
 
 // now actually listen for new messages
 setInterval(() => {
-  console.log("processing p2p messages");
   let messages = client.networking_sockets.receiveP2PMessages(10); // 10 _from each_ connection
-  messages.forEach(message => console.log(message));
+  messages.forEach(message => {
+    console.log("message from", message.steamId, ":", message.data.toString());
+    client.networking_sockets.sendP2PMessage(message.steamId, Buffer.from(`${new Date()}: Hello, from server!`), 1);
+  });
 }, 1000 / 60);

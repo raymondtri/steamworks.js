@@ -24,6 +24,7 @@ client.networking_sockets.connectP2P(mySteamId, 0);
 
 const main = async () => {
 
+  // this seems to return true no matter what
   while(client.networking_sockets.isConnected(mySteamId) === false){
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
@@ -31,7 +32,17 @@ const main = async () => {
   console.log("Connected to server!");
 
   setInterval(() => {
-    client.networking_sockets.sendP2PMessage(mySteamId, Buffer.from("Hello, from client!"), 1);
-  }, 1000)  
+    let messages = client.networking_sockets.receiveP2PMessages(10); // 10 _from each_ connection
+    messages.forEach(message => {
+      console.log("message from", message.steamId, ":", message.data.toString());
+      client.networking_sockets.sendP2PMessage(message.steamId, Buffer.from(`${new Date()}: Hello, from client!`), 1);
+    });
+  }, 1000 / 60);
+
+  setTimeout(() => {
+    console.log("sent message")
+    client.networking_sockets.sendP2PMessage(mySteamId, Buffer.from("Hello, from client!"), 1);  
+  }, 5000)
+  
 }
 main();
