@@ -14,7 +14,9 @@ pub mod networking_sockets {
         networking_types::{
           SendFlags,
           NetworkingIdentity,
-          ListenSocketEvent
+          ListenSocketEvent,
+          NetConnectionInfo,
+          NetworkingConnectionState
         },
         networking_sockets::{
           ListenSocket, NetConnection,
@@ -92,6 +94,7 @@ pub mod networking_sockets {
         let local_steam_id = PlayerSteamId::from_steamid(client.user().steam_id());
         if local_steam_id.steam_id64.get_u64().1 == steam_id64.get_u64().1 {
           // then we need to actually hijack and hit the local server via ip
+          println!("Connecting to local server via IP");
 
           let handle = client.networking_sockets().connect_by_ip_address(
             SocketAddr::new(Ipv4Addr::new(127, 0, 0, 1).into(), 6969),
@@ -277,6 +280,15 @@ pub mod networking_sockets {
     ) -> bool {
       let steam_id = SteamId::from_raw(steam_id64.get_u64().1);
       let connections = CONNECTIONS.lock().unwrap();
-      connections.contains_key(&steam_id)
+      if let Some(connection) = connections.get(&steam_id) {
+          if let Ok(info) = crate::client::get_client().networking_sockets().get_connection_info(connection) {
+            let state = info.state();
+            println!("Connection state: {:?}", state);
+            return state.ok() == Some(NetworkingConnectionState::Connected);
+          }
+      }
+      false
+
+
     }
 }
