@@ -199,6 +199,8 @@ pub mod networking_sockets {
                   // Check if we should accept the connection request
                   if *ACCEPT_NEW_REQUESTS.lock().unwrap() {
                       // Attempt to accept the connection request
+                      println!("Accepting connection request for {:?}", request.remote());
+
                       if let Err(e) = request.accept() {
                           eprintln!("Failed to accept connection: {:?}", e);
                       }
@@ -217,27 +219,26 @@ pub mod networking_sockets {
         }
     }
 
-    // now we need a way to receive all mesages
-    #[napi(object)]
-    pub struct P2PPacket {
-      pub data: Buffer,
-      pub steam_id: BigInt,
+    // return the list of connected steam ids
+    #[napi]
+    pub fn get_connected_steam_ids() -> Vec<BigInt> {
+      let connections = CONNECTIONS.lock().unwrap();
+      connections.keys().map(|steam_id| BigInt::from(steam_id.raw())).collect()
     }
 
     #[napi]
     pub fn receive_p2p_messages(
+      steam_id64: BigInt,
       batch_size: Option<u32>
-    ) -> Vec<P2PPacket> {
+    ) -> Vec<Buffer> {
+      let steam_id = SteamId::from_raw(steam_id64.get_u64().1);
       let mut messages = Vec::new();
       let mut connections = CONNECTIONS.lock().unwrap();
-      
-      for (steam_id, connection) in connections.iter_mut() {
+
+      if let Some(connection) = connections.get_mut(&steam_id) {
         if let Ok(received_messages) = connection.receive_messages(batch_size.unwrap_or(10) as usize) {
           for message in received_messages {
-            messages.push(P2PPacket {
-              steam_id: BigInt::from(steam_id.raw()),
-              data: Buffer::from(message.data()),
-            });
+            messages.push(Buffer::from(message.data()));
           }
         }
       }

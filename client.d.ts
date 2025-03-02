@@ -230,11 +230,8 @@ export declare namespace networking_sockets {
   export function disconnectP2P(steamId64: bigint): boolean
   export function processListenP2PEvents(): void
   export function processListenIpEvents(): void
-  export interface P2PPacket {
-    data: Buffer
-    steamId: bigint
-  }
-  export function receiveP2PMessages(batchSize?: number | undefined | null): Array<P2PPacket>
+  export function getConnectedSteamIds(): Array<bigint>
+  export function receiveP2PMessages(steamId64: bigint, batchSize?: number | undefined | null): Array<Buffer>
   /** The method used to send a packet */
   export const enum SendType {
     /**
