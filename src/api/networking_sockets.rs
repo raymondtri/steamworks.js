@@ -298,11 +298,11 @@ pub mod networking_sockets {
       let steam_id = SteamId::from_raw(steam_id64.get_u64().1);
       let connections = CONNECTIONS.lock().unwrap();
       if let Some(connection) = connections.get(&steam_id) {
-          if let Ok(info) = crate::client::get_client().networking_sockets().get_connection_info(connection) {
-            let state = info.state();
+            if let Ok((info, _)) = crate::client::get_client().networking_sockets().get_realtime_connection_status(connection, 0) {
+            let state = info.connection_state();
             println!("Connection state: {:?}", state);
             return state.ok() == Some(NetworkingConnectionState::Connected);
-          }
+            }
       }
       false
 
