@@ -111,8 +111,8 @@ jobs:
 
       - name: Commit and push artifacts
         run: |
-          git add dist/
+          git add dist/ -f
           git commit -m "Add built artifacts for commit ${{ github.sha }}"
-          git push origin master  # Replace 'master' with your target branch if different
+          git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GHUB_TOKEN }}
