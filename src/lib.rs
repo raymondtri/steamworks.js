@@ -33,9 +33,7 @@ pub fn init(app_id: Option<u32>) -> Result<(), Error> {
 
     steam_client.networking_messages().session_request_callback(move |req| {
       println!("Accepting session request from {:?}", req.remote());
-      // assert!(req.accept());
       req.accept();
-      // mimicing the assert! causes it to crash
     });
 
     steam_client.networking_messages().session_failed_callback(|info| {
@@ -53,22 +51,7 @@ pub fn restart_app_if_necessary(app_id: u32) -> bool {
 
 #[napi]
 pub fn run_callbacks() {
-    let c = client::get_client();
-    /*
-    println!("running callbacks in thread {}", std::process::id());
-    c.networking_messages().session_request_callback(move |req| {
-      
-      // assert!(req.accept());
-      req.accept();
-      // mimicing the assert! causes it to crash
-      println!("Accepting session request");
-    });
-
-    c.networking_messages().session_failed_callback(|info| {
-      println!("Session failed: {:?}", info);
-    });
-    */
-    c.run_callbacks();
+    client::get_client().run_callbacks();
 }
 
 pub mod api;
