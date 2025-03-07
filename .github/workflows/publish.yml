@@ -55,7 +55,7 @@ jobs:
               run: npm run build -- --target x86_64-pc-windows-msvc
 
             - name: Upload artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: OS specific binaries
                   path: dist
@@ -90,7 +90,7 @@ jobs:
               run: npm run build -- --target aarch64-apple-darwin
 
             - name: Upload artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: OS specific binaries
                   path: dist
